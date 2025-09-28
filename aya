@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Earth's Invisible Shield — Ozone, DNA & Health</title>
+  <!-- Playful fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;700&family=Baloo+2:wght@400;600;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg1:#fef6ff; /* pastel lavender */
+      --bg2:#d9f3ff; /* pastel sky */
+      --ink:#2b3044;
+      --accent:#7a5cff; /* playful purple */
+      --good:#25c685; /* healthy green */
+      --warn:#ffb703; /* amber */
+      --bad:#ff5c8a;  /* pinkish red */
+      --ocean:#4aa8ff; /* bright ocean */
+      --land:#3cc083; /* vibrant green */
+      --ozone:#89d5ff; /* bubble blue */
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: 'Fredoka', 'Baloo 2', system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
+      color:var(--ink);
+      background: radial-gradient(1200px 800px at 20% -10%, var(--bg2), transparent 60%),
+                  radial-gradient(1200px 800px at 120% 10%, var(--bg1), transparent 60%),
+                  linear-gradient(180deg, #fff, #f7fbff 60%, #eef7ff 100%);
+    }
+
+    header{
+      padding: 16px 20px 8px;
+      text-align:center;
+    }
+    h1{
+      margin:0 0 4px;
+      font-weight:800;
+      letter-spacing:0.3px;
+      font-family:'Baloo 2', 'Fredoka', system-ui;
+      font-size: clamp(24px, 3.6vw, 42px);
+    }
+    .subtitle{
+      margin:0 auto 8px;
+      opacity:.8;
+      max-width:900px;
+      font-size:clamp(14px,1.4vw,18px);
+    }
+
+    .app{
+      display:grid;
+      grid-template-rows:auto 1fr auto;
+      min-height:calc(100% - 0px);
+      gap:10px;
+    }
+
+    .stage{
+      display:grid;
+      grid-template-columns:1fr;
+      place-items:center;
+      width:100%;
+      padding: clamp(8px, 2vw, 20px);
+    }
+
+    .canvas-wrap{
+      width:min(1100px, 96vw);
+      aspect-ratio: 16/10;
+      background: linear-gradient(180deg, #eaf6ff 0%, #ffffff 40%, #fff7fb 100%);
+      border-radius: 24px;
+      box-shadow: 0 12px 30px rgba(60, 80, 120, .12), 0 2px 8px rgba(60,80,120,.06);
+      position:relative;
+      overflow:hidden;
+    }
+
+    /* Info pop chips */
+    .chip{
+      position:absolute;
+      background:#fff;
+      color:var(--ink);
+      border-radius:14px;
+      padding:6px 10px;
+      font-size:14px;
+      box-shadow:0 6px 18px rgba(50,60,90,.12);
+      display:flex; gap:8px; align-items:center;
+      transition: transform .25s ease, opacity .25s ease;  
+    }
+    .chip small{opacity:.7}
+    .chip b{font-weight:700}
+    .chip svg{width:18px;height:18px;opacity:.8}
+    .chip.hide{opacity:0; transform:translateY(-6px)}
+
+    /* Controls */
+    .controls{
+      display:flex; flex-wrap:wrap; justify-content:center; gap:10px; padding: 0 16px 16px;
+    }
+    .btn{
+      appearance:none; border:0; cursor:pointer;
+      padding:10px 14px; border-radius:14px; font-weight:700;
+      background:#fff; color:var(--ink);
+      box-shadow:0 10px 20px rgba(50,60,90,.10), inset 0 0 0 2px rgba(0,0,0,.03);
+      transition: transform .08s ease, box-shadow .2s ease;  
+    }
+    .btn:active{ transform: translateY(1px)}
+    .btn.primary{ background: linear-gradient(180deg, #b3e1ff, #8dd1ff); box-shadow: 0 10px 20px rgba(80,160,240,.25);}
+    .btn.good{ background: linear-gradient(180deg, #a9f5c8, #7ee3b1);} 
+    .btn.warn{ background: linear-gradient(180deg, #ffe29e, #ffd36e);} 
+    .btn.bad{  background: linear-gradient(180deg, #ffb6cf, #ff8eb0);} 
+
+    /* SVG scene scaling */
+    svg#scene{ width:100%; height:100%; display:block; }
+
+    /* Bubble glow */
+    .ozoneBubble{ fill: url(#bubbleGradient); filter:url(#glow); opacity:.9; transition: opacity .3s ease; }
+
+    /* Ozone cracks */
+    .crack{ stroke:#7b61ff; stroke-width:3; stroke-linecap:round; stroke-linejoin:round; stroke-dasharray:6 8; opacity:0; }
+
+    /* UV rays */
+    .uv{ stroke:url(#uvStroke); stroke-width:6; fill:none; opacity:0; }
+    .uv.zig{ stroke-dasharray: 8 6; }
+    .uvFly{ animation: uvFall 2.2s linear infinite; }
+    @keyframes uvFall{ from{ transform: translateY(-10px);} to{ transform: translateY(260px);} }
+
+    /* Happy DNA vs damaged DNA */
+    .dna{ transform-origin: center; }
+    .dna.happy{ animation: dnaSpin 7s linear infinite; filter: drop-shadow(0 0 8px rgba(37,198,133,.6)); }
+    .dna.broken{ animation: dnaShake .8s ease-in-out infinite; filter: drop-shadow(0 0 6px rgba(255,92,138,.7)); }
+    @keyframes dnaSpin{ from{ transform: rotate(0deg);} to{ transform: rotate(360deg);} }
+    @keyframes dnaShake{ 0%,100%{ transform: translate(0,0) rotate(-1deg);} 50%{ transform: translate(1.5px,-1.5px) rotate(2deg);} }
+    .dna .base{ transition: opacity .25s ease; }
+    .dna .base.face{ font-size:10px; }
+
+    /* Human character simple */
+    .human-skin{ fill:#ffd3b6; }
+    .human-shirt{ fill:#7a5cff; }
+    .human-outline{ stroke:#2b3044; stroke-width:2; fill:none; }
+
+    /* Drag items O3 */
+    .o3{ position:absolute; top:10px; left:10px; width:72px; height:72px; cursor:grab; user-select:none; touch-action:none; }
+    .o3:active{ cursor:grabbing }
+    .o3 svg{ width:100%; height:100%; display:block; }
+
+    /* Hotspots */
+    .hotspot{ position:absolute; width:64px; height:64px; border-radius:50%;
+      transform:translate(-50%, -50%);
+      box-shadow: 0 0 0 0 rgba(122,92,255,.0);
+      transition: box-shadow .25s ease, transform .2s ease;
+      pointer-events:none;
+    }
+    .hotspot.active{ box-shadow: 0 0 0 10px rgba(122,92,255,.12), 0 0 0 18px rgba(122,92,255,.06); }
+    .hotspot.filled{ box-shadow:none; }
+
+    /* States */
+    .state-protected .uv{ opacity:0 }
+    .state-cracked .crack{ opacity:1; animation: crackPulse 1.8s ease-in-out infinite; }
+    .state-cracked .uv{ opacity:.9 }
+    .state-repaired .uv{ opacity:0 }
+    @keyframes crackPulse{ 0%,100%{ stroke-width:3} 50%{ stroke-width:5 } }
+
+    /* Footer */
+    footer{ text-align:center; font-size:13px; opacity:.8; padding: 8px 16px 24px; }
+
+    /* Responsive helper labels */
+    .legend{ position:absolute; right:10px; top:10px; background:rgba(255,255,255,.8); border-radius:12px; padding:8px 10px; font-size:13px; }
+  </style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <h1>Earth's Invisible Shield</h1>
+    <p class="subtitle">A playful, student‑friendly demo showing how the <b>ozone layer</b> protects us from <b>UV rays</b>, and what happens to our <b>DNA</b> when that shield is damaged.</p>
+  </header>
+
+  <main class="stage">
+    <div class="canvas-wrap" id="canvasWrap" aria-label="Interactive ozone and DNA scene">
+      <!-- Hint chips -->
+      <div class="chip" id="chip1" style="left:18px; top:12px">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 7h2v2h-2V7Zm0 4h2v6h-2v-6Zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2Zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8Z" fill="currentColor"/></svg>
+        <span><b>Tip:</b> Hover or click the bubble!</span>
+      </div>
+      <div class="chip hide" id="chip2" style="left:50%; top:62%; transform:translateX(-50%)">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 7h2v2h-2V7Zm0 4h2v6h-2v-6Zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2Zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8Z" fill="currentColor"/></svg>
+        <span><b>Zoom:</b> Watch DNA react to UV.</span>
+      </div>
+
+      <!-- Hotspots for mini-game (absolute; positioned over cracks) -->
+      <div class="hotspot" id="hot1" style="left:54%; top:28%"></div>
+      <div class="hotspot" id="hot2" style="left:46%; top:38%"></div>
+      <div class="hotspot" id="hot3" style="left:59%; top:46%"></div>
+
+      <!-- Drag‑and‑drop O3 tokens -->
+      <div class="o3" id="o3a" aria-label="O3 molecule draggable" title="Drag me to patch the ozone!" style="left:12px; top:60px">
+        <svg viewBox="0 0 90 90"><defs><radialGradient id="o3g" cx="50%" cy="40%" r="70%"><stop offset="0%" stop-color="#b9ecff"/><stop offset="70%" stop-color="#7fd6ff"/><stop offset="100%" stop-color="#50bef3"/></radialGradient></defs>
+          <circle cx="45" cy="45" r="32" fill="url(#o3g)" stroke="#2b3044" stroke-width="2"/>
+          <text x="45" y="52" text-anchor="middle" font-size="26" font-weight="800" fill="#2b3044">O₃</text>
+        </svg>
+      </div>
+      <div class="o3" id="o3b" aria-label="O3 molecule draggable" title="Drag me too!" style="left:100px; top:60px">
+        <svg viewBox="0 0 90 90"><use href="#o3sym"/></svg>
+      </div>
+      <div class="o3" id="o3c" aria-label="O3 molecule draggable" title="One more!" style="left:188px; top:60px">
+        <svg viewBox="0 0 90 90"><use href="#o3sym"/></svg>
+      </div>
+
+      <!-- Legend -->
+      <div class="legend">Mini‑game: <b>Save the Shield!</b> Drag <b>O₃</b> onto the pulsing rings.</div>
+
+      <!-- Scene (SVG) -->
+      <svg id="scene" viewBox="0 0 1200 750" role="img" aria-labelledby="title desc">
+        <title id="title">Cartoon Earth with ozone bubble, UV rays, human, and DNA</title>
+        <desc id="desc">Interactive demo showing ozone as a bubble that can crack, letting UV rays hit a character and DNA.</desc>
+
+        <defs>
+          <linearGradient id="skyGrad" x1="0" x2="0" y1="0" y2="1">
+            <stop offset="0%" stop-color="#eaf6ff"/>
+            <stop offset="100%" stop-color="#fff"/>
+          </linearGradient>
+          <radialGradient id="bubbleGradient" cx="50%" cy="44%" r="60%">
+            <stop offset="0%" stop-color="#c8f2ff" stop-opacity=".95"/>
+            <stop offset="55%" stop-color="#a4e6ff" stop-opacity=".75"/>
+            <stop offset="100%" stop-color="#89d5ff" stop-opacity=".5"/>
+          </radialGradient>
+          <linearGradient id="uvStroke" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#ffd000"/>
+            <stop offset="100%" stop-color="#7a5cff"/>
+          </linearGradient>
+          <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur stdDeviation="8" result="b"/>
+            <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+
+          <!-- Reusable O3 symbol for extra tokens -->
+          <g id="o3sym">
+            <defs><radialGradient id="o3g2" cx="50%" cy="40%" r="70%"><stop offset="0%" stop-color="#b9ecff"/><stop offset="70%" stop-color="#7fd6ff"/><stop offset="100%" stop-color="#50bef3"/></radialGradient></defs>
+            <circle cx="45" cy="45" r="32" fill="url(#o3g2)" stroke="#2b3044" stroke-width="2"/>
+            <text x="45" y="52" text-anchor="middle" font-size="26" font-weight="800" fill="#2b3044">O₃</text>
+          </g>
+        </defs>
+
+        <!-- Background sky -->
+        <rect x="0" y="0" width="1200" height="750" fill="url(#skyGrad)"/>
+
+        <!-- EARTH + OZONE -->
+        <g id="earthGroup" transform="translate(350,70)">
+          <!-- Earth body -->
+          <g id="earth">
+            <circle cx="250" cy="250" r="200" fill="var(--ocean)" stroke="#2b3044" stroke-width="3"/>
+            <!-- Continents (simple blobs) -->
+            <path d="M200 140c40-30 80-30 120 10 20 20 10 40-10 50-30 15-40 35-30 60-40 10-80-10-90-40-12-34 3-63 10-80Z" fill="var(--land)" stroke="#2b3044" stroke-width="2" opacity=".95"/>
+            <path d="M140 260c-30 10-40 30-28 50 22 35 94 52 130 30 25-15 25-40 0-58-25-19-60-29-102-22Z" fill="var(--land)" stroke="#2b3044" stroke-width="2" opacity=".95"/>
+            <path d="M300 340c10 5 30 10 45 10 22 0 40-10 55-20 15-10 25-10 35 0 8 8 8 20-3 30-30 26-78 40-120 32-15-3-22-20-12-32Z" fill="var(--land)" stroke="#2b3044" stroke-width="2" opacity=".95"/>
+          </g>
+
+          <!-- Ozone bubble (interactive) -->
+          <g id="ozone" class="ozone" tabindex="0" aria-label="Ozone bubble">
+            <circle class="ozoneBubble" cx="250" cy="250" r="235"/>
+            <!-- Cracks (hidden until cracked) -->
+            <path class="crack" id="cr1" d="M250 40 l-20 20 18 22 -22 18 20 20 -18 22" />
+            <path class="crack" id="cr2" d="M420 210 l-22 12 14 18 -16 16 10 20 -18 12" />
+            <path class="crack" id="cr3" d="M120 320 l18 12 -12 20 22 12 -16 18 20 14" />
+          </g>
+
+          <!-- UV rays positioned above bubble so they fall through when cracked -->
+          <g id="uvGroup" transform="translate(0,-40)">
+            <polyline class="uv zig" points="250,0 240,10 260,20 245,30 265,40 250,50"/>
+            <polyline class="uv uvFly" points="210,0 200,10 220,20 205,30 225,40 210,50"/>
+            <polyline class="uv uvFly" points="290,0 280,10 300,20 285,30 305,40 290,50"/>
+          </g>
+        </g>
+
+        <!-- HUMAN CHARACTER -->
+        <g id="human" transform="translate(900,370)">
+          <circle cx="-300" cy="40" r="36" class="human-skin" stroke="#2b3044" stroke-width="2"/>
+          <rect x="-340" y="80" rx="16" ry="16" width="80" height="100" class="human-shirt" stroke="#2b3044" stroke-width="2"/>
+          <path d="M -360 120 Q -350 130 -340 120" class="human-outline"/>
+          <path d="M -260 120 Q -275 130 -280 120" class="human-outline"/>
+          <circle cx="-312" cy="36" r="4" fill="#2b3044"/>
+          <circle cx="-288" cy="36" r="4" fill="#2b3044"/>
+          <path d="M -305 50 q 5 6 10 0" stroke="#2b3044" stroke-width="2" fill="none"/>
+        </g>
+
+        <!-- DNA CLOSEUP (center bottom) -->
+        <g id="dnaGroup" transform="translate(420,470)">
+          <g class="dna happy" id="dna">
+            <!-- Helix rails -->
+            <path d="M0 0 C 30 -40, 90 -40, 120 0 S 210 40, 240 0" stroke="#ff6584" stroke-width="6" fill="none"/>
+            <path d="M0 120 C 30 80, 90 80, 120 120 S 210 160, 240 120" stroke="#7a5cff" stroke-width="6" fill="none"/>
+            <!-- Rungs (bases) -->
+            <g id="bases">
+              <g class="base"><line x1="15" y1="12" x2="15" y2="108" stroke="#ffd000" stroke-width="6"/></g>
+              <g class="base"><line x1="45" y1="4" x2="45" y2="116" stroke="#25c685" stroke-width="6"/></g>
+              <g class="base"><line x1="75" y1="12" x2="75" y2="108" stroke="#ff6584" stroke-width="6"/></g>
+              <g class="base"><line x1="105" y1="4" x2="105" y2="116" stroke="#ffd000" stroke-width="6"/></g>
+              <g class="base"><line x1="135" y1="12" x2="135" y2="108" stroke="#25c685" stroke-width="6"/></g>
+              <g class="base"><line x1="165" y1="4" x2="165" y2="116" stroke="#ff6584" stroke-width="6"/></g>
+              <g class="base"><line x1="195" y1="12" x2="195" y2="108" stroke="#ffd000" stroke-width="6"/></g>
+            </g>
+            <!-- Cute faces appear only in broken state -->
+            <text class="base face" id="ouch1" x="60" y="64" text-anchor="middle" opacity="0">(>_<)</text>
+            <text class="base face" id="ouch2" x="180" y="64" text-anchor="middle" opacity="0">(x_x)</text>
+          </g>
+        </g>
+
+        <!-- Labels near bottom -->
+        <g transform="translate(350,650)">
+          <rect x="0" y="-28" rx="10" ry="10" width="500" height="40" fill="#fff" opacity=".9"/>
+          <text x="14" y="-4" font-size="18" fill="#2b3044">• Ozone = Earth's invisible shield   • Ozone depletion = more UV rays   • UV rays damage DNA → health risks</text>
+        </g>
+      </svg>
+    </div>
+  </main>
+
+  <section class="controls" aria-label="Scene controls">
+    <button class="btn primary" id="btnProtect" title="Ozone intact (safe)">Ozone: Protected</button>
+    <button class="btn warn" id="btnCrack" title="Open cracks; UV gets in">Ozone: Crack / Hover</button>
+    <button class="btn good" id="btnRepair" title="Patch with O₃ to heal">Repair with O₃</button>
+    <button class="btn bad" id="btnUVTest" title="Trigger a UV burst">UV Burst</button>
+  </section>
+
+  <footer>
+    Built with ❤️ for students — bright colors, smooth animations, and simple science.
+  </footer>
+</div>
+
+<script type="module">
+  // Simple modular structure inside a single file
+  const qs = (s, p=document) => p.querySelector(s);
+  const qsa = (s, p=document) => [...p.querySelectorAll(s)];
+
+  const wrap = qs('#canvasWrap');
+  const scene = qs('#scene');
+  const ozone = qs('#ozone');
+  const dna = qs('#dna');
+  const uv = qsa('.uv');
+  const cracks = qsa('.crack');
+  const chip1 = qs('#chip1');
+  const chip2 = qs('#chip2');
+  const hotspots = [qs('#hot1'), qs('#hot2'), qs('#hot3')];
+  const o3s = [qs('#o3a'), qs('#o3b'), qs('#o3c')];
+  const ouch1 = qs('#ouch1');
+  const ouch2 = qs('#ouch2');
+
+  let state = 'protected'; // 'protected' | 'cracked' | 'repaired'
+  let filled = 0;
+
+  function setScene(newState){
+    state = newState;
+    wrap.classList.remove('state-protected','state-cracked','state-repaired');
+    wrap.classList.add(`state-${state}`);
+
+    if(state === 'protected'){
+      uv.forEach(u=>u.classList.remove('uvFly'));
+      dna.classList.add('happy');
+      dna.classList.remove('broken');
+      [ouch1, ouch2].forEach(e=>e.setAttribute('opacity','0'));
+      chip1.classList.remove('hide');
+      chip2.classList.add('hide');
+      hotspots.forEach(h=>h.classList.remove('active','filled'));
+      filled = 0;
+    }
+    if(state === 'cracked'){
+      uv.forEach(u=>u.classList.add('uvFly'));
+      dna.classList.remove('happy');
+      dna.classList.add('broken');
+      [ouch1, ouch2].forEach(e=>e.setAttribute('opacity','1'));
+      chip1.classList.add('hide');
+      chip2.classList.remove('hide');
+      hotspots.forEach(h=>h.classList.add('active'));
+    }
+    if(state === 'repaired'){
+      uv.forEach(u=>u.classList.remove('uvFly'));
+      dna.classList.add('happy');
+      dna.classList.remove('broken');
+      [ouch1, ouch2].forEach(e=>e.setAttribute('opacity','0'));
+      chip1.classList.add('hide');
+      chip2.classList.add('hide');
+      hotspots.forEach(h=>{h.classList.remove('active'); h.classList.add('filled')});
+    }
+  }
+
+  // Initialize
+  setScene('protected');
+
+  // Controls
+  qs('#btnProtect').addEventListener('click', ()=> setScene('protected'));
+  qs('#btnCrack').addEventListener('click', ()=> setScene('cracked'));
+  qs('#btnRepair').addEventListener('click', ()=> {
+    if(filled>=3) setScene('repaired');
+    else {
+      // brief hint wiggle
+      hotspots.forEach(h=>{
+        h.animate([{transform:'translate(-50%,-50%) scale(1.0)'},{transform:'translate(-50%,-50%) scale(1.08)'},{transform:'translate(-50%,-50%) scale(1.0)'}], {duration:500});
+      });
+    }
+  });
+  qs('#btnUVTest').addEventListener('click', ()=>{
+    // flash UV briefly regardless of state
+    uv.forEach(u=>{
+      u.classList.add('uvFly');
+      setTimeout(()=> state==='protected' && u.classList.remove('uvFly'), 1600);
+    });
+    // DNA reacts only if cracked
+    if(state==='cracked'){
+      dna.animate([
+        {transform:'translate(0,0) rotate(0deg)'},
+        {transform:'translate(2px,-2px) rotate(2deg)'},
+        {transform:'translate(-2px,1px) rotate(-2deg)'},
+        {transform:'translate(0,0) rotate(0deg)'}
+      ],{duration:600});
+    }
+  });
+
+  // Ozone interactive: hover/click to crack
+  function openCracks(){ setScene('cracked'); }
+  ozone.addEventListener('pointerenter', openCracks);
+  ozone.addEventListener('click', openCracks);
+  ozone.addEventListener('keydown', (e)=>{ if(e.key==='Enter' || e.key===' '){ openCracks(); }});
+
+  // Drag & drop O3 tokens onto hotspots
+  o3s.forEach(initDraggable);
+
+  function initDraggable(el){
+    let offsetX=0, offsetY=0, dragging=false;
+
+    const onDown = (e)=>{
+      dragging = true;
+      el.style.zIndex = 10;
+      const rect = el.getBoundingClientRect();
+      offsetX = (e.touches? e.touches[0].clientX : e.clientX) - rect.left;
+      offsetY = (e.touches? e.touches[0].clientY : e.clientY) - rect.top;
+      window.addEventListener('pointermove', onMove);
+      window.addEventListener('pointerup', onUp, {once:true});
+    };
+    const onMove = (e)=>{
+      if(!dragging) return;
+      const x = (e.clientX || (e.touches && e.touches[0].clientX)) - offsetX;
+      const y = (e.clientY || (e.touches && e.touches[0].clientY)) - offsetY;
+      el.style.left = x + 'px';
+      el.style.top  = y + 'px';
+    };
+    const onUp = ()=>{
+      dragging = false;
+      el.style.zIndex = 1;
+      window.removeEventListener('pointermove', onMove);
+      // Snap if close to an unfilled hotspot
+      const elRect = el.getBoundingClientRect();
+      const target = hotspots.find(h=> !h.classList.contains('filled') && overlap(elRect, h.getBoundingClientRect()));
+      if(target){
+        // center over hotspot
+        el.style.left = (target.getBoundingClientRect().left - 0 + target.offsetWidth/2 - el.offsetWidth/2) + 'px';
+        el.style.top  = (target.getBoundingClientRect().top  - 0 + target.offsetHeight/2 - el.offsetHeight/2) + 'px';
+        target.classList.add('filled');
+        target.classList.remove('active');
+        filled++;
+        el.style.pointerEvents='none';
+        // celebratory pulse
+        el.animate([{transform:'scale(1)'},{transform:'scale(1.15)'},{transform:'scale(1)'}],{duration:400, easing:'ease-out'});
+        if(filled>=3){ setScene('repaired'); }
+      }
+    };
+
+    el.addEventListener('pointerdown', onDown);
+    el.addEventListener('touchstart', (e)=>{ e.preventDefault(); onDown(e.touches[0]); }, {passive:false});
+  }
+
+  function overlap(r1, r2){
+    const cx1 = r1.left + r1.width/2, cy1 = r1.top + r1.height/2;
+    const cx2 = r2.left + r2.width/2, cy2 = r2.top + r2.height/2;
+    const dist = Math.hypot(cx1 - cx2, cy1 - cy2);
+    const rad = Math.min(r1.width, r1.height)/2 + Math.min(r2.width, r2.height)/2;
+    return dist < rad + 14; // a little forgiveness
+  }
+
+  // Resize observer to reposition initial O3 if layout shifts
+  new ResizeObserver(()=>{
+    // Keep O3 along the top-left region nicely
+    const rect = wrap.getBoundingClientRect();
+    o3s.forEach((el, i)=>{
+      if(parseInt(el.style.top) < 20 || parseInt(el.style.left) < 20){
+        el.style.left = 12 + i*88 + 'px';
+        el.style.top = 60 + 'px';
+      }
+    });
+  }).observe(wrap);
+</script>
+</body>
+</html>
